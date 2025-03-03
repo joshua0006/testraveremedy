@@ -10,12 +10,11 @@
  * ```
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { formatPrice } from '../../utils/formatPrice';
 import { useCheckout } from '../../hooks/useCheckout';
-import { Check, X } from 'lucide-react';
 
 interface CartSummaryProps {
   cartTotal: number;
@@ -23,60 +22,23 @@ interface CartSummaryProps {
 }
 
 export const CartSummary: React.FC<CartSummaryProps> = ({ cartTotal, onClose }) => {
-  const { cart, discountAmount, voucherCode, setVoucherCode, applyVoucher, isVoucherValid, voucherMessage } = useCart();
-  const [tempVoucherCode, setTempVoucherCode] = useState(voucherCode);
+  const { cart } = useCart();
   const { handleCheckout: processCheckout, isLoading } = useCheckout();
 
   // Determine if free shipping applies (orders over $50)
   const FREE_SHIPPING_THRESHOLD = 50;
   const shippingCost = cartTotal >= FREE_SHIPPING_THRESHOLD ? 0 : 995; // $9.95 in cents
   
-  // Final total with shipping and discount
-  const finalTotal = cartTotal - discountAmount + shippingCost;
-
-  const handleApplyVoucher = () => {
-    applyVoucher(tempVoucherCode);
-  };
+  // Final total with shipping
+  const finalTotal = cartTotal + shippingCost;
 
   return (
-    <div className="p-4 border-t border-white/10">
-      <div className="mt-4 mb-4">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Voucher Code"
-            value={tempVoucherCode}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTempVoucherCode(e.target.value)}
-            className="flex-grow bg-white/5 border border-white/10 rounded px-3 py-2 text-white"
-          />
-          <button 
-            onClick={handleApplyVoucher}
-            className="bg-white/10 text-white px-4 py-2 rounded hover:bg-white/20 transition-colors"
-          >
-            Apply
-          </button>
-        </div>
-        
-        {voucherMessage && (
-          <div className={`flex items-center mt-2 text-sm ${isVoucherValid ? 'text-[#00ffff]' : 'text-red-400'}`}>
-            {isVoucherValid ? <Check className="w-4 h-4 mr-1" /> : <X className="w-4 h-4 mr-1" />}
-            {voucherMessage}
-          </div>
-        )}
-      </div>
-      
+    <div className="p-4 border-t border-white/10">      
       <div className="space-y-2 mb-4">
         <div className="flex justify-between">
           <span className="text-white/70">Subtotal</span>
           <span>${formatPrice(cartTotal)}</span>
         </div>
-        
-        {isVoucherValid && discountAmount > 0 && (
-          <div className="flex justify-between text-[#00ffff]">
-            <span>Discount (10%)</span>
-            <span>-${formatPrice(discountAmount)}</span>
-          </div>
-        )}
         
         <div className="flex justify-between">
           <span className="text-white/70">Shipping</span>
