@@ -146,9 +146,27 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {/* Price display */}
           <div className="mt-auto">
             <p className="text-xl font-bold">${formatPrice(totalPrice)}</p>
-            {quantity >= 2 && (
-              <p className="text-fuchsia-400 text-sm">Free Shipping!</p>
-            )}
+            <div className="flex items-center gap-2 mt-1">
+              {(id !== "one-and-done" || quantity >= 2) ? (
+                <p className="text-fuchsia-400 text-sm flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                    <path d="M3 3v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3"></path>
+                    <path d="M2 12h20v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-7z"></path>
+                    <path d="M12 12v9"></path>
+                    <path d="M12 3v9"></path>
+                  </svg>
+                  Free Shipping
+                </p>
+              ) : (
+                <p className="text-gray-400 text-sm flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                    <rect width="18" height="12" x="3" y="8" rx="2"></rect>
+                    <path d="M7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  + Shipping ($9.95)
+                </p>
+              )}
+            </div>
           </div>
         </div>
         
@@ -163,6 +181,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <QuantitySelector
               quantity={quantity}
               onQuantityChange={setQuantity}
+              productId={id}
             />
           </div>
           

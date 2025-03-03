@@ -11,7 +11,7 @@
  */
 
 import React from 'react';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Truck, AlertCircle } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { formatPrice } from '../../utils/formatPrice';
 import { useCheckout } from '../../hooks/useCheckout';
@@ -25,9 +25,17 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ cartTotal, onClose }) 
   const { cart } = useCart();
   const { handleCheckout: processCheckout, isLoading } = useCheckout();
 
-  // Determine if free shipping applies (orders over $50)
-  const FREE_SHIPPING_THRESHOLD = 50;
-  const shippingCost = cartTotal >= FREE_SHIPPING_THRESHOLD ? 0 : 995; // $9.95 in cents
+  // Check if we need to apply shipping:
+  // 1. Only if it's only the "one-and-done" product
+  // 2. With quantity = 1
+  // 3. And it's the only item in the cart
+  const shouldApplyShipping = 
+    cart.length === 1 && 
+    cart[0].id === "one-and-done" && 
+    cart[0].quantity === 1;
+  
+  // Shipping cost
+  const shippingCost = shouldApplyShipping ? 995 : 0; // $9.95 in cents
   
   // Final total with shipping
   const finalTotal = cartTotal + shippingCost;
@@ -40,14 +48,25 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ cartTotal, onClose }) 
           <span>${formatPrice(cartTotal)}</span>
         </div>
         
-        <div className="flex justify-between">
-          <span className="text-white/70">Shipping</span>
+        <div className="flex justify-between items-center">
+          <span className="flex items-center gap-1 text-white/70">
+            <Truck className="w-4 h-4" /> Shipping
+          </span>
           {shippingCost === 0 ? (
-            <span className="text-[#ff00ff]">Free</span>
+            <span className="text-fuchsia-400 font-medium">Free</span>
           ) : (
             <span>${formatPrice(shippingCost)}</span>
           )}
         </div>
+        
+        {shouldApplyShipping && (
+          <div className="flex items-start gap-2 px-3 py-2 bg-fuchsia-950/30 border border-fuchsia-500/20 rounded-lg mt-2">
+            <AlertCircle className="w-4 h-4 text-fuchsia-400 shrink-0 mt-0.5" />
+            <p className="text-sm text-white/80">
+              Add one more bottle or increase quantity to qualify for <span className="text-fuchsia-400 font-medium">free shipping</span>!
+            </p>
+          </div>
+        )}
         
         <div className="flex justify-between font-bold text-lg pt-2 border-t border-white/10">
           <span>Total</span>
