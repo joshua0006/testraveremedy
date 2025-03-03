@@ -1,0 +1,38 @@
+[build]
+  command = "npm install && npm run build"
+  publish = "dist"
+  functions = "./netlify/functions"
+
+[dev]
+  command = "npm run dev"
+  port = 5173
+  targetPort = 5173
+  publish = "dist"
+  framework = "vite"
+  autoLaunch = true
+  functions = "./netlify/functions"
+
+# Forward all API requests to Netlify Functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+# Explicitly expose the Netlify Functions path
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+# Handle single-page application routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Specify function specific settings
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["stripe"]
