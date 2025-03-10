@@ -16,16 +16,28 @@ import { Menu, X } from 'lucide-react';
 
 interface NavigationProps {
   scrollToProduct: () => void;
+  isMenuOpen: boolean;
+  setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  showAboutModal: boolean;
+  setShowAboutModal: React.Dispatch<React.SetStateAction<boolean>>;
+  showContactModal: boolean;
+  setShowContactModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const Navigation: React.FC<NavigationProps> = ({ scrollToProduct }) => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+export const Navigation: React.FC<NavigationProps> = ({ 
+  scrollToProduct,
+  isMenuOpen,
+  setIsMenuOpen,
+  showAboutModal,
+  setShowAboutModal,
+  showContactModal,
+  setShowContactModal
+}) => {
   const menuItems = [
-    { label: 'Shop Now', href: '/shop' },
-    { label: 'About', href: '/about' },
-    { label: 'FAQs', href: '/faqs' },
-    { label: 'Contact', href: '/contact' },
+    { label: 'Shop Now', href: undefined, onClick: scrollToProduct },
+    { label: 'About', href: '/about', onClick: () => setShowAboutModal(true) },
+    { label: 'FAQs', href: '/faqs', onClick: undefined },
+    { label: 'Contact', href: '/contact', onClick: () => setShowContactModal(true) },
   ];
 
   const legalLinks = [
@@ -68,11 +80,11 @@ export const Navigation: React.FC<NavigationProps> = ({ scrollToProduct }) => {
           <div className="md:hidden flex items-center gap-4">
             <CartButton />
             <button 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="text-white p-2 hover:text-[#ff00ff] transition-colors"
-              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             >
-              {isMobileMenuOpen ? (
+              {isMenuOpen ? (
                 <X className="w-6 h-6" />
               ) : (
                 <Menu className="w-6 h-6" />
@@ -83,14 +95,14 @@ export const Navigation: React.FC<NavigationProps> = ({ scrollToProduct }) => {
       </div>
 
       {/* Mobile Menu */}
-      {isMobileMenuOpen && (
+      {isMenuOpen && (
         <div className="md:hidden">
           <div className="px-4 pt-2 pb-6 space-y-2 bg-black/90 backdrop-blur-lg border-b border-white/20">
             {menuItems.map((item) => (
               <button
                 key={item.label}
                 onClick={() => {
-                  setIsMobileMenuOpen(false);
+                  setIsMenuOpen(false);
                   item.href ? window.location.href = item.href : item.onClick?.();
                 }}
                 className="block w-full text-left px-4 py-3 text-white hover:text-[#ff00ff] transition-colors"
@@ -105,7 +117,7 @@ export const Navigation: React.FC<NavigationProps> = ({ scrollToProduct }) => {
                 <a
                   key={item.label}
                   href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={() => setIsMenuOpen(false)}
                   className="block w-full text-left px-4 py-2 text-sm text-white hover:text-[#ff00ff] transition-colors"
                 >
                   {item.label}

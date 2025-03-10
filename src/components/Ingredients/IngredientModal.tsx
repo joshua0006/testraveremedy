@@ -30,7 +30,7 @@ export const IngredientModal: React.FC<IngredientModalProps> = ({
   const formatDetails = (details: string) => {
     return details.split('\n').map((line, index) => {
       if (line.startsWith('•')) {
-        const [bullet, ...content] = line.split('**');
+        const [...content] = line.split('**');
         const [boldText, ...rest] = content.join('').split('**');
         return (
           <div key={index} className="flex items-start space-x-2 mb-3">

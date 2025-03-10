@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { INGREDIENTS } from './ingredients.data';
 import { IngredientModal } from './IngredientModal';
 

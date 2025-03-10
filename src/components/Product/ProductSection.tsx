@@ -13,7 +13,7 @@
  * ```
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useCart } from '../../context/CartContext';
 import { formatPrice } from '../../utils/formatPrice';
 import { FlavorSelector } from './FlavorSelector';
@@ -102,8 +102,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
   imagePlaceholder,
   gradientFrom,
   gradientTo,
-  buttonFrom,
-  buttonTo
 }) => {
   const [flavor, setFlavor] = useState('Lemon Squash');
   const [selectedFlavors, setSelectedFlavors] = useState<string[]>([]);
