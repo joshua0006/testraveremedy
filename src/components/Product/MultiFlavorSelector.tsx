@@ -186,31 +186,7 @@ export const MultiFlavorSelector: React.FC<MultiFlavorSelectorProps> = ({
         })}
       </div>
       
-      {/* Selected flavors summary */}
-      <div className="flex items-center justify-between bg-black/20 rounded-lg px-4 py-2 border border-white/10">
-        <div className="text-sm text-gray-400">Your selection:</div>
-        <div className="flex flex-wrap gap-2 justify-end">
-          {selectedFlavors.filter(Boolean).map((flavor, index) => {
-            const color = getFlavorColor(flavor);
-            
-            return (
-              <div 
-                key={`summary-${index}-${flavor}`}
-                className={`inline-flex items-center gap-1 px-2 py-1 rounded-full bg-${color}-500/20 border border-${color}-500/30 text-sm`}
-              >
-                <span className="text-xs text-gray-400">{index + 1}:</span>
-                <span>{flavor}</span>
-              </div>
-            );
-          })}
-          
-          {selectedFlavors.filter(Boolean).length < maxSelections && (
-            <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/10 border border-white/20 text-sm text-gray-400">
-              {maxSelections - selectedFlavors.filter(Boolean).length} more
-            </div>
-          )}
-        </div>
-      </div>
+    
     </div>
   );
 }; 
