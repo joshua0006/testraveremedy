@@ -42,7 +42,7 @@ export const IngredientsList: React.FC = () => {
       </button>
 
       <div className="overflow-x-auto hide-scrollbar ingredients-scroll-container">
-        <div className="flex gap-4 py-8 px-12">
+        <div className="flex gap-6 py-8 px-12">
           {INGREDIENTS.map((ingredient, index) => (
             <div 
               key={index}
@@ -57,23 +57,35 @@ export const IngredientsList: React.FC = () => {
                 }
               }}
             >
-              <div className="group relative glass-panel rounded-xl p-6 border border-white/10 hover:border-[#ff00ff]/20 hover-glow cursor-pointer overflow-hidden h-[280px] w-[240px]">
-                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#ff00ff]/10 to-[#00ffff]/10 rounded-full blur-2xl transform translate-x-6 -translate-y-6 group-hover:scale-150 transition-transform duration-500" />
+              <div className="group relative glass-panel rounded-xl p-6 border border-white/10 hover:border-[#ff00ff]/20 hover-glow cursor-pointer overflow-hidden h-[300px] w-[240px] transition-all duration-300 transform hover:scale-[1.02]">
+                {/* Glow effect */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#ff00ff]/10 to-[#00ffff]/10 rounded-full blur-2xl transform translate-x-6 -translate-y-6 group-hover:scale-150 transition-transform duration-500" />
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-[#ff00ff]/10 to-[#00ffff]/10 rounded-full blur-2xl transform -translate-x-6 translate-y-6 group-hover:scale-150 transition-transform duration-500" />
+                
                 <div className="relative flex flex-col items-center justify-center text-center h-full">
-                  <div className="w-24 h-24 mb-6">
+                  {/* Powder image */}
+                  <div className="w-32 h-32 mb-6 relative">
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-black/10 to-purple-900/10 blur-md group-hover:opacity-70 transition-opacity duration-300"></div>
                     <img 
                       src={ingredient.image} 
                       alt={ingredient.name}
-                      className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_0_8px_rgba(255,0,255,0.3)]"
+                      className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_0_12px_rgba(255,0,255,0.4)]"
                       loading="lazy"
                     />
                   </div>
-                  <h3 className="text-2xl font-bold text-white group-hover:text-[#ff00ff] transition-colors mb-3">
+                  
+                  {/* Ingredient info */}
+                  <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-white to-white group-hover:from-[#ff66ff] group-hover:to-[#00ffff] bg-clip-text text-transparent transition-colors duration-300">
                     {ingredient.name}
                   </h3>
                   <p className="text-base text-gray-400 group-hover:text-gray-300 transition-colors">
                     {ingredient.desc}
                   </p>
+                  
+                  {/* View details hint */}
+                  <div className="absolute bottom-4 w-full left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm text-[#ff00ff]">
+                    Click for details
+                  </div>
                 </div>
               </div>
             </div>

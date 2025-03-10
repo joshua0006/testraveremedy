@@ -8,6 +8,7 @@
  * - Quantity adjustments
  * - Price calculations
  * - Checkout process
+ * - Smooth slide animations
  * 
  * @component
  * @example
@@ -16,7 +17,7 @@
  * ```
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, ShoppingCart, Trash2, Plus, Minus } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { formatPrice } from '../../utils/formatPrice';
@@ -33,17 +34,54 @@ export const CartDrawer: React.FC = () => {
     cartCount
   } = useCart();
 
-  if (!isCartOpen) return null;
+  // Track animation state separately from open/close state
+  const [isVisible, setIsVisible] = useState(false);
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+  
+  // Manage animations with useEffect
+  useEffect(() => {
+    if (isCartOpen) {
+      // When opening, show container immediately and animate drawer in
+      setIsVisible(true);
+      setIsAnimatingOut(false);
+    } else if (!isCartOpen && isVisible) {
+      // When closing, trigger closing animation then hide after it completes
+      setIsAnimatingOut(true);
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+        setIsAnimatingOut(false);
+      }, 300); // Match this to the animation duration
+      return () => clearTimeout(timer);
+    }
+  }, [isCartOpen, isVisible]);
+
+  // If cart is not open and animation has completed, don't render anything
+  if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+    <div 
+      className={`fixed inset-0 z-50 overflow-hidden transition-opacity duration-300 ease-in-out ${
+        isAnimatingOut ? 'opacity-0' : 'opacity-100'
+      }`}
+      role="dialog" 
+      aria-modal="true" 
+      aria-labelledby="cart-title"
+    >
+      {/* Backdrop with click-away handler */}
       <div 
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+        className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-300 ease-in-out ${
+          isAnimatingOut ? 'opacity-0' : 'opacity-100'
+        }`}
         onClick={() => setIsCartOpen(false)}
         aria-hidden="true"
       />
       
-      <div className="absolute top-0 right-0 h-full w-full max-w-md transform transition-transform duration-300 ease-in-out bg-black/90 border-l border-[#ff00ff]/20">
+      {/* Cart drawer content */}
+      <div 
+        className={`absolute top-0 right-0 h-full w-full max-w-md border-l border-[#ff00ff]/20 bg-black/90 ${
+          isAnimatingOut ? 'animate-slide-out-right' : 'animate-slide-in-right'
+        }`}
+      >
         <div className="h-full flex flex-col">
           {/* Header */}
           <div className="p-4 border-b border-white/10 flex items-center justify-between">

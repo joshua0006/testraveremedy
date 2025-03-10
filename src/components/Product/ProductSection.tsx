@@ -18,42 +18,64 @@ import { useCart } from '../../context/CartContext';
 import { formatPrice } from '../../utils/formatPrice';
 import { FlavorSelector } from './FlavorSelector';
 import { QuantitySelector } from './QuantitySelector';
+import { MultiFlavorSelector } from './MultiFlavorSelector';
 
 // Toast notification component
 interface ToastProps {
   message: string;
   type: 'success' | 'error';
   onClose: () => void;
+  onViewCart?: () => void; // Optional callback to view cart
 }
 
-const Toast: React.FC<ToastProps> = ({ message, type, onClose }) => {
+const Toast: React.FC<ToastProps> = ({ message, type, onClose, onViewCart }) => {
   React.useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
-    }, 3000);
+    }, 4000); // Increased duration to give users more time to see the message
     
     return () => clearTimeout(timer);
   }, [onClose]);
   
   return (
     <div className="fixed top-6 right-6 z-50 transition-all duration-300 transform translate-y-0 opacity-100 animate-slide-down">
-      <div className={`px-6 py-4 rounded-lg shadow-lg flex items-center ${
+      <div className={`px-6 py-4 rounded-lg shadow-lg ${
         type === 'success' 
           ? 'bg-gradient-to-r from-purple-900/90 to-fuchsia-900/90 border border-fuchsia-500/30' 
           : 'bg-red-900/90 border border-red-500/30'
       } backdrop-blur-md`}>
-        <div className={`mr-3 text-2xl ${type === 'success' ? 'text-fuchsia-400' : 'text-red-400'}`}>
-          {type === 'success' ? '✓' : '✗'}
+        <div className="flex items-center">
+          <div className={`mr-3 text-2xl ${type === 'success' ? 'text-fuchsia-400' : 'text-red-400'}`}>
+            {type === 'success' ? '✓' : '✗'}
+          </div>
+          <p className="text-white font-medium">{message}</p>
+          <button 
+            onClick={onClose}
+            className="ml-4 text-white/70 hover:text-white transition-colors"
+            aria-label="Close notification"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
         </div>
-        <p className="text-white font-medium">{message}</p>
-        <button 
-          onClick={onClose}
-          className="ml-4 text-white/70 hover:text-white transition-colors"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-          </svg>
-        </button>
+        
+        {type === 'success' && onViewCart && (
+          <div className="mt-3 flex justify-end">
+            <button 
+              onClick={() => {
+                onViewCart();
+                onClose();
+              }}
+              className="px-4 py-1.5 bg-gradient-to-r from-[#ff00ff] via-[#ff66ff] to-[#00ffff] text-white text-sm rounded-full hover:opacity-90 transition-all flex items-center justify-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+              </svg>
+              View Cart
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -84,23 +106,49 @@ const ProductCard: React.FC<ProductCardProps> = ({
   buttonTo
 }) => {
   const [flavor, setFlavor] = useState('Lemon Squash');
+  const [selectedFlavors, setSelectedFlavors] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(1);
   const [showToast, setShowToast] = useState(false);
-  const { addToCart } = useCart();
+  const { addToCart, setIsCartOpen } = useCart();
+  
+  // Initialize selectedFlavors with initial values based on product type
+  React.useEffect(() => {
+    if (id === "dynamic-duo" && selectedFlavors.length !== 2) {
+      // For Dynamic Duo, initialize with default selections if not set
+      setSelectedFlavors(["Lemon Squash", "Orange Crush"]);
+    } else if (id === "triple-threat" && selectedFlavors.length !== 3) {
+      // For Triple Threat, initialize with default selections if not set
+      setSelectedFlavors(["Lemon Squash", "Orange Crush", "Pineapple Punch"]);
+    }
+  }, [id, selectedFlavors.length]);
 
   const handleAddToCart = () => {
     // Get the correct bottle image
     const bottleImage = getBottleImage();
     
-    addToCart({
-      id,
-      name,
-      description: `Premium ${name}`,
-      images: [bottleImage], // Use the same bottle image from the product card
-      unitPrice: price,
-      quantity,
-      flavor
-    });
+    // For bundle products, use the selected flavors array
+    if (id === "dynamic-duo" || id === "triple-threat") {
+      addToCart({
+        id,
+        name,
+        description: `Premium ${name}`,
+        images: [bottleImage],
+        unitPrice: price,
+        quantity,
+        flavor: selectedFlavors.join(", ") // Join all flavors with a comma
+      });
+    } else {
+      // For single products, use the single flavor
+      addToCart({
+        id,
+        name,
+        description: `Premium ${name}`,
+        images: [bottleImage],
+        unitPrice: price,
+        quantity,
+        flavor
+      });
+    }
     
     // Show toast instead of opening cart
     setShowToast(true);
@@ -117,7 +165,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const totalPrice = price * quantity;
 
   return (
-    <div className="glass-panel rounded-3xl p-6 h-full">
+    <div className="glass-panel rounded-3xl p-6 h-full relative isolate">
       {/* Main grid with 2 columns */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left column - Product image, name, and price */}
@@ -170,42 +218,60 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
         
-        {/* Right column - Flavor, quantity selectors and add to cart button */}
-        <div className="flex flex-col justify-between space-y-4">
-          <div className="space-y-4">
-            <FlavorSelector 
+        {/* Right column - Product options and add to cart */}
+        <div className="flex flex-col gap-4 relative overflow-visible">
+          {/* Flavor selection */}
+          {id === "dynamic-duo" ? (
+            <MultiFlavorSelector
+              selectedFlavors={selectedFlavors}
+              onFlavorsChange={setSelectedFlavors}
+              maxSelections={2}
+            />
+          ) : id === "triple-threat" ? (
+            <MultiFlavorSelector
+              selectedFlavors={selectedFlavors}
+              onFlavorsChange={setSelectedFlavors}
+              maxSelections={3}
+            />
+          ) : (
+            <FlavorSelector
               selectedFlavor={flavor}
               onFlavorChange={setFlavor}
             />
-            
-            <QuantitySelector
-              quantity={quantity}
-              onQuantityChange={setQuantity}
-              productId={id}
-            />
-          </div>
+          )}
           
+          {/* Quantity selection */}
+          <QuantitySelector
+            quantity={quantity}
+            onQuantityChange={setQuantity}
+            productId={id}
+          />
+          
+          {/* Add to cart button */}
           <button 
             onClick={handleAddToCart}
-            className={`w-full bg-gradient-to-r from-fuchsia-600 to-violet-600 py-3 px-6 rounded-full text-white font-medium hover:from-fuchsia-700 hover:to-violet-700 transition relative overflow-hidden group`}
+            className="w-full bg-gradient-to-r from-[#ff00ff] via-[#ff66ff] to-[#00ffff] text-white px-6 py-4 rounded-xl font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-fuchsia-500/20 hover:shadow-fuchsia-500/30"
           >
-            <span className="relative z-10 flex items-center justify-center">
-              Add to Cart
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3z" />
-                <path d="M16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-              </svg>
-            </span>
-            <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+            </svg>
+            Add to Cart
           </button>
           
           {/* Toast notification */}
           {showToast && (
             <Toast 
-              message={`Added ${quantity} ${quantity === 1 ? 'pack' : 'packs'} of ${name} to cart!`}
+              message={`Added ${quantity} ${quantity === 1 ? 'pack' : 'packs'} of ${name} ${
+                id === "dynamic-duo" || id === "triple-threat" 
+                  ? `with flavors: ${selectedFlavors.map((flavor, index) => `${index + 1}: ${flavor}`).join(', ')}`
+                  : `(${flavor})`
+              } to cart!`}
               type="success"
               onClose={() => {
                 setShowToast(false);
+              }}
+              onViewCart={() => {
+                setIsCartOpen(true);
               }}
             />
           )}
@@ -219,14 +285,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
 const VideoCard: React.FC = () => {
   const [isVideoActive, setIsVideoActive] = useState(false);
   
-
-  
   const handleVideoActivation = () => {
     setIsVideoActive(true);
   };
 
   return (
-    <div className="glass-panel rounded-3xl p-6 h-full relative overflow-hidden group">
+    <div className="glass-panel rounded-3xl p-0 h-full relative overflow-hidden group">
       {/* Background gradient overlay with animation */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-600/20 via-fuchsia-500/10 to-blue-500/20 z-0 animate-pulse"></div>
       
@@ -235,19 +299,17 @@ const VideoCard: React.FC = () => {
       <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-blue-500/30 rounded-full blur-3xl"></div>
       
       {/* Full card video area */}
-      <div className="relative z-10 flex flex-col h-full">
-        <div className="aspect-video w-full bg-gradient-to-br from-fuchsia-600/20 via-purple-500/20 to-blue-600/20 rounded-2xl overflow-hidden mb-4 relative border border-white/10">
+      <div className="relative z-10 h-full w-full">
+        <div className="w-full h-full overflow-hidden relative">
           {isVideoActive ? (
             <iframe 
-            src="https://www.youtube.com/embed/4qz6x8y3tNw?autoplay=1&mute=1&enablejsapi=1&controls=0&loop=1&playlist=4qz6x8y3tNw&rel=0"
-            className="w-full h-full absolute inset-0 z-10"
-            title="Recovery Product Demo"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
-          
-          
+              src="https://www.youtube.com/embed/4qz6x8y3tNw?autoplay=1&mute=1&enablejsapi=1&controls=1&loop=1&playlist=4qz6x8y3tNw&rel=0"
+              className="w-full h-full absolute inset-0 z-10"
+              title="Recovery Product Demo"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
           ) : (
             <>
               {/* Video thumbnail with play overlay */}
@@ -270,8 +332,13 @@ const VideoCard: React.FC = () => {
                   <div className="w-0 h-0 border-t-10 border-t-transparent border-l-20 border-l-white border-b-10 border-b-transparent ml-2"></div>
                 </div>
                 
+                {/* Title overlay */}
+                <div className="absolute top-6 left-6 backdrop-blur-sm px-4 py-2 rounded-xl text-xl font-bold text-white bg-black/30 border border-white/10">
+                  Product Demo
+                </div>
+                
                 {/* YouTube logo to indicate source */}
-                <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-white flex items-center">
+                <div className="absolute bottom-6 right-6 bg-black/70 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-white flex items-center">
                   <svg className="h-4 w-4 mr-1 text-red-600" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                   </svg>
@@ -286,8 +353,6 @@ const VideoCard: React.FC = () => {
             </>
           )}
         </div>
-        
-       
       </div>
     </div>
   );
@@ -295,7 +360,7 @@ const VideoCard: React.FC = () => {
 
 export const ProductSection: React.FC = () => {
   return (
-    <div id="product-section" className="relative py-24 bg-black">
+    <div id="product-section" className="relative pb-32 bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-4xl font-bold gradient-text text-center mb-12">
           Recovery Solutions

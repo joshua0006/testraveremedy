@@ -65,7 +65,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     });
     
-    // Removed automatic cart opening behavior
+    // Don't automatically open cart when adding items
     // setIsCartOpen(true);
   };
   

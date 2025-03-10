@@ -189,9 +189,9 @@ function App() {
           setShowContactModal={setShowContactModal}
         />
         <HeroSection />
+        <ProductSection />
         <BenefitsSection />
         <IngredientsSection />
-        <ProductSection />
         <FAQSection />
         <Footer 
           

@@ -34,5 +34,35 @@ export const INGREDIENTS = [
     desc: "Supports liver health (600mg)",
     image: "/N-Acetylcysteine (NAC) Off-white.png",
     details: "• **Powerful Antioxidant (600mg)** supports your body's natural detox processes\n• **Liver Protection** helps process and eliminate toxins efficiently\n• **Morning-After Support** reduces post-party effects\n• **Respiratory Support** helps clear airways after crowded venues"
+  },
+  {
+    name: "Ashwagandha",
+    desc: "Stress reduction (500mg)",
+    image: "/Ashwagandha Light beige-2.png",
+    details: "• **Adaptogenic Herb (500mg)** helps the body manage stress\n• **Cortisol Regulation** balances stress hormone levels\n• **Mood Enhancement** provides calming effects after intense experiences\n• **Energy Balance** reduces fatigue without stimulation"
+  },
+  {
+    name: "L-Theanine",
+    desc: "Mental clarity (200mg)",
+    image: "/L-Theanine Bright white-2.png",
+    details: "• **Amino Acid (200mg)** promotes relaxation without drowsiness\n• **Alpha Wave Support** creates a state of calm alertness\n• **Focus Enhancement** improves concentration and mental clarity\n• **Synergistic Effect** works with other ingredients to reduce jitters"
+  },
+  {
+    name: "Milk Thistle",
+    desc: "Liver protection (250mg)",
+    image: "/Milk Thistle Light brow-2.png",
+    details: "• **Silymarin Complex (250mg)** protects liver cells from damage\n• **Detoxification Support** helps clear toxins from the system\n• **Antioxidant Properties** reduces oxidative stress from substances\n• **Recovery Acceleration** supports liver regeneration"
+  },
+  {
+    name: "Turmeric",
+    desc: "Anti-inflammatory (500mg)",
+    image: "/Turmeric Vibrant yellow-orange-1.png",
+    details: "• **Curcumin-Rich Formula (500mg)** provides powerful anti-inflammatory effects\n• **Joint Recovery** eases discomfort after physical activity\n• **Brain Protection** supports cognitive function and clarity\n• **Comprehensive Support** works alongside other ingredients for full-body recovery"
+  },
+  {
+    name: "Zinc",
+    desc: "Immune function (15mg)",
+    image: "/Zinc Bright white.png",
+    details: "• **Essential Mineral (15mg)** supports over 300 enzyme functions\n• **Immune Defense** strengthens your body's natural defenses\n• **Antioxidant Properties** protects cells from free radical damage\n• **Recovery Support** aids in protein synthesis for cellular repair"
   }
 ];

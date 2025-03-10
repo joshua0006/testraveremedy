@@ -14,7 +14,7 @@ export const HeroSection: React.FC = () => (
         alt="Rave background"
         className="w-full h-screen object-cover opacity-40"
         loading="eager" 
-        fetchpriority="high"
+        fetchPriority="high"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black via-purple-900/40 to-black mix-blend-multiply" />
     </div>
@@ -26,7 +26,7 @@ export const HeroSection: React.FC = () => (
             alt="RaveRemedy Logo"
             className="max-w-[1000px] w-full h-auto mx-auto object-contain"
             loading="eager"
-            fetchpriority="high"
+            fetchPriority="high"
           />
         </div>
       </div>
